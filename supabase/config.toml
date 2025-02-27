@@ -1,0 +1,20 @@
+project_id = "uvsxosexezyafgfimklv"
+
+[api]
+enabled = true
+port = 54321
+schemas = ["public", "storage", "graphql_public"]
+
+[db]
+port = 54330  # Choose a higher port number
+
+[studio]
+enabled = true
+port = 54323
+
+[storage]
+enabled = true
+
+[auth]
+enabled = true
+
