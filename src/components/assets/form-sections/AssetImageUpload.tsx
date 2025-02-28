@@ -16,6 +16,7 @@ const AssetImageUpload = ({ form }: AssetImageUploadProps) => {
   const { user } = useAuth();
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    console.log(supabase, "supabase");
     const file = e.target.files?.[0];
     if (!file || !user) return;
 
@@ -34,10 +35,12 @@ const AssetImageUpload = ({ form }: AssetImageUploadProps) => {
         .from('asset_images')
         .getPublicUrl(filePath);
 
+        console.log("publicUrl",publicUrl, "publicUrl");
+
       form.setValue('image_url', publicUrl);
       toast.success('Image uploaded successfully');
     } catch (error) {
-      console.error('Error uploading image:', error);
+      console.error('Error uploading  image:', error);
       toast.error('Failed to upload image');
     } finally {
       setIsUploading(false);

@@ -94,7 +94,7 @@ export const PremiumFeaturesProvider = ({ children }: { children: React.ReactNod
         ? new Date(Date.now() + duration * 60 * 60 * 1000).toISOString()
         : null;
 
-        console.log(expiresAt,"expiresAt")
+        console.log("expiresAttttttttttttttttttttttttttttttttttttttttttttttttttttttt",expiresAt)
 
       const { error } = await supabase.from("premium_feature_usage").insert({
         user_id: user.id,

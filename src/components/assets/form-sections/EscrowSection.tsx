@@ -24,6 +24,9 @@ const EscrowSection = ({ form }: EscrowSectionProps) => {
     }
   });
 
+
+  console.log("Escrow Providers", escrowProviders);
+
   return (
     <Card>
       <CardHeader>

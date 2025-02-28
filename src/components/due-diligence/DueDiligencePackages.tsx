@@ -4,6 +4,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 interface DueDiligencePackage {
   id: string;
@@ -18,7 +20,12 @@ interface DueDiligencePackagesProps {
   packageType?: string;
 }
 
+
+
 const DueDiligencePackages = ({ packageType }: DueDiligencePackagesProps) => {
+  const { user } = useAuth(); // Moved to the top
+  const navigate = useNavigate(); // Moved to the top
+
   const { data: packages, isLoading, error } = useQuery({
     queryKey: ["dueDiligencePackages", packageType],
     queryFn: async () => {
@@ -38,7 +45,6 @@ const DueDiligencePackages = ({ packageType }: DueDiligencePackagesProps) => {
         throw error;
       }
 
-      console.log("Fetched packages:", data);
       return data as DueDiligencePackage[];
     },
   });
@@ -60,6 +66,30 @@ const DueDiligencePackages = ({ packageType }: DueDiligencePackagesProps) => {
     return <div>No due diligence packages available at the moment.</div>;
   }
 
+  const handlePurchase = async (pkg: DueDiligencePackage) => {
+    if (!user) {
+      toast.error("Please log in to purchase a due diligence package");
+      navigate("/login");
+      return;
+    }
+
+    try {
+      const { data: { url }, error } = await supabase.functions.invoke('create-checkout-session', {
+        body: {
+          featureType: 'due_diligence',
+          packageId: pkg.id,
+          amount: pkg.price
+        }
+      });
+
+      if (error) throw error;
+      window.location.href = url;
+    } catch (error) {
+      console.error('Error creating checkout session:', error);
+      toast.error('Failed to process payment');
+    }
+  };
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {packages.map((pkg) => (
@@ -78,7 +108,9 @@ const DueDiligencePackages = ({ packageType }: DueDiligencePackagesProps) => {
                 </li>
               ))}
             </ul>
-            <Button className="w-full">Purchase Package</Button>
+            <Button onClick={() => handlePurchase(pkg)} className="w-full">
+              Purchase Package
+            </Button>
           </CardContent>
         </Card>
       ))}
