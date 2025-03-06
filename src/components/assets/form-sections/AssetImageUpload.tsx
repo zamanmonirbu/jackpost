@@ -29,6 +29,8 @@ const AssetImageUpload = ({ form }: AssetImageUploadProps) => {
         .from('asset_images')
         .upload(filePath, file);
 
+        // console.log("Upload errrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr",uploadError);
+
       if (uploadError) throw uploadError;
 
       const { data: { publicUrl } } = supabase.storage

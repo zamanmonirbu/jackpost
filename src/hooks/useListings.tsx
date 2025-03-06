@@ -21,6 +21,9 @@ interface ListingsFilters {
 }
 
 export const useListings = (filters?: ListingsFilters) => {
+
+  // console.log("Fetching listings with filters:", filters);
+
   return useQuery({
     queryKey: ["listings", filters],
     queryFn: async () => {
@@ -29,17 +32,11 @@ export const useListings = (filters?: ListingsFilters) => {
         
         let query = supabase
           .from("business_listings")
-          .select(`
-            *,
-            profiles:user_id (
-              id,
-              full_name,
-              avatar_url,
-              is_verified
-            )
-          `)
+          .select(`*,profiles:user_id (id,full_name,avatar_url,is_verified)`)
           .eq("status", "published")
           .is("deleted_at", null);
+
+          console.log("filters", filters);
 
         // Apply filters if they exist
         if (filters) {
@@ -84,6 +81,8 @@ export const useListings = (filters?: ListingsFilters) => {
         }
 
         const { data: fetchedListings, error: fetchError } = await query;
+
+        // console.log("Fetched listings:", fetchedListings);
 
         if (fetchError) {
           console.error("Error fetching listings:", fetchError);

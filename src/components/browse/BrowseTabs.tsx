@@ -16,6 +16,8 @@ interface BrowseTabsProps {
     scalabilityRating: number;
     isFranchiseAvailable: boolean;
     verificationType: string;
+    location: string;
+    industry: string;
   };
   isDynamicActive?: boolean;
   onFilterChange?: (filters: any) => void;

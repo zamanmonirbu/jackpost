@@ -24,7 +24,7 @@ export function PaymentMethodCheck({
   const navigate = useNavigate();
 
 
-  console.log("Userasdfsadf",user?.id)
+  // console.log("Userasdfsadf",user?.id)
 
   const isControlled = externalIsOpen !== undefined && externalSetIsOpen !== undefined;
   const isOpen = isControlled ? externalIsOpen : internalIsOpen;

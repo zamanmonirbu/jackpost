@@ -19,7 +19,7 @@ export const PremiumFeaturesProvider = ({ children }: { children: React.ReactNod
   const [features, setFeatures] = useState<PremiumFeature[]>([]);
   const [isVerified, setIsVerified] = useState(false);
 
-  console.log(user?.id)
+  // console.log(user?.id)
 
 
 
@@ -59,7 +59,7 @@ export const PremiumFeaturesProvider = ({ children }: { children: React.ReactNod
 
       setFeatures(formattedFeatures);
     } catch (error) {
-      console.error("Error refreshing premium features:", error);
+      // console.error("Error refreshing premium features:", error);
       toast.error("Failed to refresh premium features");
     }
   };
@@ -75,14 +75,14 @@ export const PremiumFeaturesProvider = ({ children }: { children: React.ReactNod
 
       return data || false;
     } catch (error) {
-      console.error("Error checking feature status:", error);
+      // console.error("Error checking feature status:", error);
       return false;
     }
   };
 
   const activateFeature = async (type: PremiumFeature["type"], duration?: number) => {
 
-    console.log("Activating feature:", type, duration);
+    // console.log("Activating feature:", type, duration);
 
     if (!user) {
       toast.error("Please log in to access premium features");
@@ -94,7 +94,7 @@ export const PremiumFeaturesProvider = ({ children }: { children: React.ReactNod
         ? new Date(Date.now() + duration * 60 * 60 * 1000).toISOString()
         : null;
 
-        console.log("expiresAttttttttttttttttttttttttttttttttttttttttttttttttttttttt",expiresAt)
+        // console.log("expiresAttttttttttttttttttttttttttttttttttttttttttttttttttttttt",expiresAt)
 
       const { error } = await supabase.from("premium_feature_usage").insert({
         user_id: user.id,
@@ -110,14 +110,14 @@ export const PremiumFeaturesProvider = ({ children }: { children: React.ReactNod
       toast.success(`${type.replace("_", " ")} activated successfully!`);
       return true;
     } catch (error) {
-      console.error("Error activating feature:", error);
+      // console.error("Error activating feature:", error);
       toast.error("Failed to activate feature");
       return false;
     }
   };
 
   useEffect(() => {
-    console.log("Running useEffect");
+    // console.log("Running useEffect");
     if (user) {
       refreshFeatures();
     }

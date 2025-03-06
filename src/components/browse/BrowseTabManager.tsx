@@ -1,10 +1,10 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import BrowseTabs from "./BrowseTabs";
-import RealEstateListingsGrid from "../real-estate/RealEstateListingsGrid";
-import AssetGrid from "../assets/AssetGrid";
-import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useQuery } from "@tanstack/react-query";
+import AssetGrid from "../assets/AssetGrid";
+import RealEstateListingsGrid from "../real-estate/RealEstateListingsGrid";
+import BrowseTabs from "./BrowseTabs";
 
 interface BrowseTabManagerProps {
   activeTab: string;
@@ -36,6 +36,8 @@ const BrowseTabManager = ({
       return data;
     },
   });
+
+  // console.log("assets", assets);
 
   return (
     <Card className="shadow-sm">

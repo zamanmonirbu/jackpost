@@ -1,59 +1,119 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { industries, states } from "@/components/business-listing/constants";
 import { Button } from "@/components/ui/button";
+import { useFilterManagement } from "@/hooks/useFilterManagement";
 import { Search } from "lucide-react";
-import { industries } from "@/components/business-listing/constants";
-import LocationInput from "./LocationInput";
-import IndustryInput from "./IndustryInput";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import IndustryInput from "./IndustryInput";
+import LocationInput from "./LocationInput";
 
 const SmartSearchBar = () => {
   const navigate = useNavigate();
+  const { handleFilterChange } = useFilterManagement();
   const [locationInput, setLocationInput] = useState("");
   const [industryInput, setIndustryInput] = useState("");
-  const [suggestions, setSuggestions] = useState<{
-    locations: string[];
-    industries: string[];
-  }>({
-    locations: [],
+  const [suggestions, setSuggestions] = useState({
+    states: [],
     industries: [],
   });
 
-  const locations = [
-    "New York, NY",
-    "Los Angeles, CA",
-    "Chicago, IL",
-    "Houston, TX",
-    "Phoenix, AZ",
-  ];
+  const [searchValue, setSearchValue] = useState({
+    revenueRange: [0, 100000000] as [number, number],
+    profitMargin: [0, 100] as [number, number],
+    employeeCount: "",
+    yearsInOperation: "",
+    businessType: "",
+    locationType: "",
+    hasWebsite: false,
+    hasSocialMedia: false,
+    scalabilityRating: 0,
+    isFranchiseAvailable: false,
+    verificationType: "",
+    industry: "",
+    state: "",
+    priceRange: [0, 100000000],
+    grossRevenue: [0, 100000000],
+  });
+
+  // const handleSearch = () => {
+  //   if (!locationInput && !industryInput) {
+  //     toast.error("Please enter a location or industry to search");
+  //     return;
+  //   }
+
+  //   const updatedSearchValue = {
+  //     ...searchValue,
+  //     state: locationInput,
+  //     industry: industryInput,
+  //     location: locationInput,
+  //     revenueRange: searchValue.revenueRange as [number, number],
+  //     grossRevenue: searchValue.grossRevenue as [number, number],
+  //     profitMargin: searchValue.profitMargin as [number, number],
+  //   };
+
+  //   console.log("updatedSearchValue", updatedSearchValue);
+
+  //   setSearchValue(updatedSearchValue);
+  //   handleFilterChange(updatedSearchValue);
+  //   setFilters(updatedSearchValue);
+  //   navigate(`/browse`);
+  // };
 
   const handleSearch = () => {
     if (!locationInput && !industryInput) {
       toast.error("Please enter a location or industry to search");
       return;
     }
-    
-    const searchParams = new URLSearchParams();
-    if (locationInput) searchParams.set("location", locationInput);
-    if (industryInput) searchParams.set("industry", industryInput);
-    
-    navigate(`/browse?${searchParams.toString()}`);
+
+    const updatedSearchValue = {
+      ...searchValue,
+      location: locationInput, // Ensure correct field name
+      industry: industryInput,
+    };
+
+    console.log("updatedSearchValue", updatedSearchValue);
+
+    // Ensure only relevant filters are passed
+    const filteredSearchValue = {
+      revenueRange: updatedSearchValue.revenueRange as [number, number],
+      profitMargin: updatedSearchValue.profitMargin as [number, number],
+      employeeCount: updatedSearchValue.employeeCount,
+      yearsInOperation: updatedSearchValue.yearsInOperation,
+      businessType: updatedSearchValue.businessType,
+      locationType: updatedSearchValue.locationType,
+      hasWebsite: updatedSearchValue.hasWebsite,
+      hasSocialMedia: updatedSearchValue.hasSocialMedia,
+      scalabilityRating: updatedSearchValue.scalabilityRating,
+      isFranchiseAvailable: updatedSearchValue.isFranchiseAvailable,
+      verificationType: updatedSearchValue.verificationType,
+      location: updatedSearchValue.location, // Ensure matching field names
+      industry: updatedSearchValue.industry,
+    };
+
+    setSearchValue(updatedSearchValue);
+    handleFilterChange(filteredSearchValue); // ✅ No need to call `setFilters` separately
+    navigate(`/browse`);
   };
 
   const handleLocationInputChange = (value: string) => {
     setLocationInput(value);
-    const filteredLocations = locations.filter((loc) =>
-      loc.toLowerCase().includes(value.toLowerCase())
-    );
-    setSuggestions((prev) => ({ ...prev, locations: filteredLocations }));
+    setSuggestions((prev) => ({
+      ...prev,
+      states: states.filter((loc) =>
+        loc.toLowerCase().includes(value.toLowerCase())
+      ),
+    }));
   };
 
   const handleIndustryInputChange = (value: string) => {
     setIndustryInput(value);
-    const filteredIndustries = industries.filter((ind) =>
-      ind.toLowerCase().includes(value.toLowerCase())
-    );
-    setSuggestions((prev) => ({ ...prev, industries: filteredIndustries }));
+    setSuggestions((prev) => ({
+      ...prev,
+      industries: industries.filter((ind) =>
+        ind.toLowerCase().includes(value.toLowerCase())
+      ),
+    }));
   };
 
   return (
@@ -63,10 +123,10 @@ const SmartSearchBar = () => {
           <LocationInput
             value={locationInput}
             onChange={handleLocationInputChange}
-            suggestions={suggestions.locations}
+            suggestions={suggestions.states}
             onSelectSuggestion={(location) => {
               setLocationInput(location);
-              setSuggestions((prev) => ({ ...prev, locations: [] }));
+              setSuggestions((prev) => ({ ...prev, states: [] }));
             }}
           />
         </div>

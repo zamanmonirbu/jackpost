@@ -32,7 +32,7 @@ const RealEstateListingForm = () => {
 
   const onSubmit = async (data: any) => {
 
-    console.log("data sdfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff", data)
+    console.log("fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff", data)
     try {
       const { error } = await supabase
         .from("business_listings")
@@ -46,7 +46,7 @@ const RealEstateListingForm = () => {
           throw error;
         }
 
-      // if (error) throw error;
+      if (error) throw error;
 
       toast.success("Property listing created successfully");
       navigate("/browse");

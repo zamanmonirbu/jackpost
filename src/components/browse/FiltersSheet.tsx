@@ -36,7 +36,7 @@ const FiltersSheet = ({
     (f) => f.type === "dynamic_filters"
   )?.isActive;
 
-  console.log(features,isDynamicActive, "isDynamicActive asdfffffffffffffffffffffffffffffffffffffffffffffffffff");
+  // console.log(features,isDynamicActive, "isDynamicActive asdfffffffffffffffffffffffffffffffffffffffffffffffffff");
 
   return (
     <Sheet>
