@@ -78,7 +78,7 @@ const DueDiligencePackages = ({ packageType }: DueDiligencePackagesProps) => {
         body: {
           featureType: 'due_diligence',
           packageId: pkg.id,
-          amount: pkg.price
+          amount: pkg.price*100
         }
       });
 

@@ -51,35 +51,32 @@ const PropertyDocumentsSection = ({ form }: PropertyDocumentsSectionProps) => {
     if (!file) return;
   
     try {
-      // Get authenticated user
+      
       const { data: userData, error: userError } = await supabase.auth.getUser();
       if (userError || !userData?.user) throw new Error("User not authenticated");
   
       const userId = userData.user.id;
-      const fileExt = file.name.split('.').pop(); // Extract file extension
-      const uniqueFileName = `${crypto.randomUUID()}.${fileExt}`; // Generate unique filename
+      const fileExt = file.name.split('.').pop(); 
+      const uniqueFileName = `${crypto.randomUUID()}.${fileExt}`; 
   
-      // Ensure "verify-documents" is the correct Supabase Storage bucket name
-      const bucketName = "verify-documents"; // CHANGE THIS TO YOUR ACTUAL BUCKET NAME
-      const filePath = `${userId}/${uniqueFileName}`; // Store in user-specific folder
+      const bucketName = "verify-documents"; 
+      const filePath = `${userId}/${uniqueFileName}`; 
   
-      // Upload file to Supabase Storage
       const { data, error: uploadError } = await supabase.storage
         .from(bucketName)
-        .upload(filePath, file, { upsert: true }); // Allows overwriting if needed
-  
+        .upload(filePath, file, { upsert: true }); 
       if (uploadError) throw uploadError;
   
-      // Get public URL of uploaded file
       const { data: urlData } = supabase.storage.from(bucketName).getPublicUrl(filePath);
       const publicUrl = urlData.publicUrl;
   
       console.log("File uploaded successfully:", publicUrl);
       toast.success("File uploaded successfully!");
+
+      console.log("UserId and public URL",userId,publicUrl);
   
-      // Save file info to Supabase database (optional)
       const { error: dbError } = await supabase
-        .from("document_listings") // Change table name if needed
+        .from("document_listings") 
         .insert({
           user_id: userId,
           file_url: publicUrl,

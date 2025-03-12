@@ -27,57 +27,52 @@ export const PaymentProvider = ({children}: {children: React.ReactNode}) => {
   const { user } = useAuth();
 
 
-
   const processPayment = async (
     amount: number,
     description: string
   ): Promise<boolean> => {
-
-    console.log("Processing payment of $", amount, "using card:", savedCard,"kljasdfdf",user);
-
-
-    // if (!savedCard) {
-    //   toast.error("Please add a payment method in billing settings");
-    //   return false;
-    // }
-
+    console.log("Processing payment of $", amount, "Description:", description);
+  
+    if (!user) {
+      toast.error("User is not authenticated");
+      return false;
+    }
+  
     try {
-      // Simulated payment processing
-
-      //  try {
-            const response = await supabase.functions.invoke('create-checkout-session', {
-              body: { featureType: 'show_more_info' },
-            });
-      
-            if (response.error) throw response.error;
-            if (!response.data?.url) throw new Error('No checkout URL received');
-      
-            window.location.href = response.data.url;
-          // } catch (error) {
-          //   console.error('Error setting up payment method:', error);
-          //   toast.error('Failed to set up payment method');
-          // }
-
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      toast.success(`Payment of $${amount} processed successfully`);
+      const { data, error } = await supabase.functions.invoke(
+        "create-checkout-session",
+        {
+          body: {
+            featureType: "show_more_info",
+            amount,
+            description,
+          },
+        }
+      );
+  
+      if (error) throw error;
+      if (!data?.url) throw new Error("No checkout URL received");
+  
+      // Redirect to Stripe checkout
+      window.location.href = data.url;
+  
       return true;
     } catch (error) {
+      console.error("Error processing payment:", error);
       toast.error("Payment failed. Please try again.");
       return false;
     }
   };
+  
 
   return (
-    <PaymentContext.Provider
-      value={{ savedCard, setSavedCard, processPayment }}
-    >
+    <PaymentContext.Provider value={{ savedCard, setSavedCard, processPayment }}>
       {children}
     </PaymentContext.Provider>
   );
 };
 
 export const usePayment = () => {
-  console.log()
   const context = useContext(PaymentContext);
   if (context === undefined) {
     throw new Error("usePayment must be used within a PaymentProvider");

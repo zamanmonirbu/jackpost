@@ -19,10 +19,6 @@ export const PremiumFeaturesProvider = ({ children }: { children: React.ReactNod
   const [features, setFeatures] = useState<PremiumFeature[]>([]);
   const [isVerified, setIsVerified] = useState(false);
 
-  // console.log(user?.id)
-
-
-
   const refreshFeatures = async () => {
     if (!user) return;
 
@@ -45,10 +41,10 @@ export const PremiumFeaturesProvider = ({ children }: { children: React.ReactNod
 
 
       const formattedFeatures: PremiumFeature[] = [
-        "dynamic_filters",//done
-        "priority_message",//done
-        "loi_submission",//done
-        "verification",//done
+        "dynamic_filters",
+        "priority_message",
+        "loi_submission",
+        "verification",
         "featured_listing",
         "priority_listing"
       ].map((type) => ({
@@ -59,7 +55,6 @@ export const PremiumFeaturesProvider = ({ children }: { children: React.ReactNod
 
       setFeatures(formattedFeatures);
     } catch (error) {
-      // console.error("Error refreshing premium features:", error);
       toast.error("Failed to refresh premium features");
     }
   };
@@ -75,49 +70,54 @@ export const PremiumFeaturesProvider = ({ children }: { children: React.ReactNod
 
       return data || false;
     } catch (error) {
-      // console.error("Error checking feature status:", error);
       return false;
     }
   };
 
-  const activateFeature = async (type: PremiumFeature["type"], duration?: number) => {
-
-    // console.log("Activating feature:", type, duration);
-
+  const activateFeature = async (
+    type: PremiumFeature["type"],
+    duration?: number,
+    paymentId?: string
+  ) => {
     if (!user) {
       toast.error("Please log in to access premium features");
       return false;
     }
-
+  
     try {
       const expiresAt = duration
         ? new Date(Date.now() + duration * 60 * 60 * 1000).toISOString()
         : null;
-
-        // console.log("expiresAttttttttttttttttttttttttttttttttttttttttttttttttttttttt",expiresAt)
-
+  
       const { error } = await supabase.from("premium_feature_usage").insert({
         user_id: user.id,
         feature_type: type,
         payment_status: "completed",
-        payment_amount: type === "verification" ? 100 : type === "loi_submission" ? 20 :type === "priority_listing" ? 2 : 1,
+        payment_amount:
+          type === "verification"
+            ? 100
+            : type === "loi_submission"
+            ? 20
+            : type === "priority_listing"
+            ? 2
+            : 1,
         expires_at: expiresAt,
+        payment_id: paymentId || null, // Store payment ID if available
       });
-
+  
       if (error) throw error;
-
+  
       await refreshFeatures();
       toast.success(`${type.replace("_", " ")} activated successfully!`);
       return true;
     } catch (error) {
-      // console.error("Error activating feature:", error);
       toast.error("Failed to activate feature");
       return false;
     }
   };
+  
 
   useEffect(() => {
-    // console.log("Running useEffect");
     if (user) {
       refreshFeatures();
     }

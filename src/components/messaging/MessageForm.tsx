@@ -31,15 +31,9 @@ export function MessageForm({ listingId, receiverId, onMessageSent }: MessageFor
 
     try {
 
-      // console.log("Content aslkdfjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjja",content,
-      //   "listing_id", listingId,
-      //   "receiver_id:", receiverId,
-      //   "sender_id:", user.id,
-      //   "is_priority:", isPriority);
-
-
       if (isPriority) {
-        const success = await processPayment(2, "Priority Message");
+        const success = await processPayment(200, "Priority Message");
+        alert(success);
         console.log("Payment success:", success);
         if (!success) {
           console.log("error",success);

@@ -12,6 +12,7 @@ import {
 import { usePremiumFeatures } from "@/contexts/PremiumFeaturesContext";
 import { useFeaturePayment } from "@/hooks/useFeaturePayment";
 import { Filter, Lock } from "lucide-react";
+import { toast } from "sonner";
 
 interface FiltersSheetProps {
   filters: any;
@@ -28,15 +29,22 @@ const FiltersSheet = ({
 }: FiltersSheetProps) => {
   const { features,checkFeatureStatus } = usePremiumFeatures();
 
-
-  // console.log("features", features);
-
-  const { isProcessing } = useFeaturePayment();
+  const { purchaseFeature, isProcessing } = useFeaturePayment();
   const isDynamicActive = features.find(
     (f) => f.type === "dynamic_filters"
   )?.isActive;
+  
+  const handleDynamicFilter = async () => {
+    try {
+      await purchaseFeature("dynamic_filters",1);
+    } catch (error) {
+      console.error("Error setting up payment method:", error);
+      toast.error("Failed to set up payment method");
+    }
+  };
 
-  // console.log(features,isDynamicActive, "isDynamicActive asdfffffffffffffffffffffffffffffffffffffffffffffffffff");
+
+
 
   return (
     <Sheet>
@@ -65,15 +73,16 @@ const FiltersSheet = ({
                   <p className="text-sm text-muted-foreground mb-4">
                     Purchase dynamic filters to access advanced search options.
                   </p>
+
                   <Button
-                    onClick={() => setShowPaymentDialog(true)}
-                    className="w-full bg-[#1a365d] hover:bg-[#2a4a7d]"
-                    disabled={isProcessing}
-                  >
-                    {isProcessing
+              onClick={handleDynamicFilter}
+              className="w-full bg-[#1a365d] hover:bg-[#2a4a7d]"
+              disabled={isProcessing}
+            >
+             {isProcessing
                       ? "Processing..."
                       : "Unlock Dynamic Filters ($1 for 1 hour)"}
-                  </Button>
+            </Button>
                 </div>
               )}
 

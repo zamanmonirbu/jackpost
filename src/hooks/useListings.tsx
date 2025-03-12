@@ -89,7 +89,7 @@ export const useListings = (filters?: ListingsFilters) => {
           throw fetchError;
         }
 
-        console.log("Fetched listings:", fetchedListings);
+        // console.log("Fetched listings:", fetchedListings);
 
         const listingsWithImages = fetchedListings?.map((listing) => ({
           ...listing,

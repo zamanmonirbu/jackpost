@@ -42,7 +42,8 @@ serve(async (req) => {
 
     // Parse request body
     const { featureType, listingId, amount, packageId } = await req.json();
-    console.log(amount, featureType, listingId, "Checking feature type");
+    amount*100;
+    // console.log(amount, featureType, listingId, "Checking feature type");
 
     // Retrieve or create a Stripe customer
     const customers = await stripe.customers.list({ email: user.email, limit: 1 });

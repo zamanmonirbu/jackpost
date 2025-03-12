@@ -36,6 +36,7 @@ const NavigationItems = ({ isMobile = false, onItemClick }: NavigationItemsProps
         { name: "Sell", path: "/sell" },
         { name: "Browse", path: "/browse" },
         { name: "Due Diligence", path: "/due-diligence" },
+        { name: "Wishlist", path: "/saved-listings" },
       ];
 
       if (profile?.is_admin) {

@@ -8,15 +8,9 @@ export const useFeaturePayment = () => {
   const { processPayment } = usePayment();
   const { activateFeature } = usePremiumFeatures();
 
-  // console.log("useFeaturePayment");
-
-
-
   const purchaseFeature = async (type:| "dynamic_filters"| "priority_message" | "loi_submission"| "verification",duration?: number) => {
 
-    console.log("purchaseFeature effect", type, duration);
-
-      setIsProcessing(true);
+    setIsProcessing(true);
     try {
       const amount =
         type === "verification"
@@ -31,6 +25,7 @@ export const useFeaturePayment = () => {
         amount,
         `${type.replace("_", " ")} purchase`
       );
+
 
       if (success) {
         await activateFeature(type, duration);

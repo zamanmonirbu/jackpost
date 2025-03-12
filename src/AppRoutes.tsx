@@ -34,6 +34,7 @@ import LOIManagement from "./pages/LOIManagement";
 import Sell from "./pages/Sell";
 import SupportRequests from "./pages/SupportRequests";
 import EscrowServices from "./pages/resources/EscrowServices";
+import EditAsset from "./pages/EditAsset";
 
 const AppRoutes = () => {
   return (
@@ -68,6 +69,8 @@ const AppRoutes = () => {
       <Route path="/create-ad" element={<CreateAd />} />
       <Route path="/ad-management" element={<AdManagement />} />
       <Route path="/create-asset" element={<CreateAsset />} />
+      <Route path="/create-asset/edit/:assetId" element={<EditAsset/>} />
+      <Route path="/sell/edit/:businessId" element={<EditListing/>} />
       <Route path="/asset-marketplace" element={<AssetMarketplace />} />
       <Route path="/loi-management" element={<LOIManagement />} />
       <Route path="/sell" element={<Sell />} />
