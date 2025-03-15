@@ -1,10 +1,10 @@
-import { useState } from "react";
 import { UseFormReturn } from "react-hook-form";
-import { FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { toast } from "sonner";
-import DocumentUploader from "../documents/DocumentUploader";
-import DocumentList from "../documents/DocumentList";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { FilePlus, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "sonner";
 
 interface PropertyDocumentsSectionProps {
   form: UseFormReturn<any>;
@@ -12,116 +12,98 @@ interface PropertyDocumentsSectionProps {
 
 const PropertyDocumentsSection = ({ form }: PropertyDocumentsSectionProps) => {
   const [isUploading, setIsUploading] = useState(false);
-  
-  // const handleFileUpload = async (e) => {
-  //   const formData = new FormData();
-  //   formData.append("file", e.target.files[0]);
+  const { user } = useAuth();
 
-
-  //   console.log("formData", formData)
-  //   setIsUploading(true);
-  
-  //   try {
-  //     const response = await fetch("https://uvsxosexezyafgfimklv.supabase.co/functions/v1/verify-document", {
-  //       method: "POST",
-  //       body: formData,
-  //     });
-  
-  //     if (!response.ok) {
-  //       throw new Error("Failed to upload document");
-  //     }
-  
-  //     const result = await response.json();
-  //     if (result.success) {
-  //       console.log("Document uploaded and verified successfully:", result.documentUrl);
-  //       // Display the document URL in your UI, or store it for later use
-  //     } else {
-  //       console.log("Verification failed:", result.error);
-  //     }
-  //   } catch (error) {
-  //     alert("Failed to upload document");
-  //     console.error("Upload error:", error);
-  //   }
-  // };
-  
-
-
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleDocumentUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file) return;
-  
-    try {
-      
-      const { data: userData, error: userError } = await supabase.auth.getUser();
-      if (userError || !userData?.user) throw new Error("User not authenticated");
-  
-      const userId = userData.user.id;
-      const fileExt = file.name.split('.').pop(); 
-      const uniqueFileName = `${crypto.randomUUID()}.${fileExt}`; 
-  
-      const bucketName = "verify-documents"; 
-      const filePath = `${userId}/${uniqueFileName}`; 
-  
-      const { data, error: uploadError } = await supabase.storage
-        .from(bucketName)
-        .upload(filePath, file, { upsert: true }); 
-      if (uploadError) throw uploadError;
-  
-      const { data: urlData } = supabase.storage.from(bucketName).getPublicUrl(filePath);
-      const publicUrl = urlData.publicUrl;
-  
-      console.log("File uploaded successfully:", publicUrl);
-      toast.success("File uploaded successfully!");
+    if (!file || !user) return;
 
-      console.log("UserId and public URL",userId,publicUrl);
-  
-      const { error: dbError } = await supabase
-        .from("document_listings") 
-        .insert({
-          user_id: userId,
-          file_url: publicUrl,
-          status: "pending",
-        });
-  
-      if (dbError) throw dbError;
-  
-      toast.success("Document record saved in database!");
+    setIsUploading(true);
+    try {
+      // Generate a unique file path for the PDF
+      const fileExt = file.name.split('.').pop();
+      const filePath = `${user.id}/${crypto.randomUUID()}.${fileExt}`;
+
+      // Upload the PDF to Supabase Storage
+      const { error: uploadError } = await supabase.storage
+        .from('property_documents') // Replace with your bucket name
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      // Get the public URL of the uploaded PDF
+      const { data: { publicUrl } } = supabase.storage
+        .from('property_documents')
+        .getPublicUrl(filePath);
+
+      console.log("Public URL:", publicUrl);
+
+      // Update the form value with the PDF URL
+      const currentDocuments = form.getValues('documents') || [];
+      form.setValue('documents', [...currentDocuments, publicUrl]);
+
+      toast.success('Document uploaded successfully');
     } catch (error) {
-      console.error("Error uploading file:", error);
-      toast.error("Failed to upload file");
+      console.error('Error uploading document:', error);
+      toast.error('Failed to upload document');
+    } finally {
+      setIsUploading(false);
     }
   };
-  
 
   const removeDocument = (index: number) => {
-    const currentDocs = form.getValues('verified_documents') || [];
-    const newDocs = [...currentDocs];
-    newDocs.splice(index, 1);
-    form.setValue('verified_documents', newDocs);
+    const currentDocuments = form.getValues('documents') || [];
+    const newDocuments = [...currentDocuments];
+    newDocuments.splice(index, 1);
+    form.setValue('documents', newDocuments);
   };
 
   return (
     <div className="space-y-4">
-      <FormField
-        control={form.control}
-        name="verified_documents"
-        render={() => (
-          <FormItem>
-            <FormLabel>Property Documents</FormLabel>
-            <div className="space-y-4">
-                <DocumentList 
-                  documents={form.watch('verified_documents')} 
-                  onRemove={removeDocument}
-                />
-              <DocumentUploader 
-                onUpload={handleFileUpload}
-                isUploading={isUploading}
-              />
-            </div>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
+      <div className="flex items-center gap-4">
+        <Button
+          type="button"
+          variant="outline"
+          disabled={isUploading}
+          onClick={() => document.getElementById('property-document')?.click()}
+        >
+          {isUploading ? (
+            <Loader2 className="h-4 w-4 animate-spin mr-2" />
+          ) : (
+            <FilePlus className="h-4 w-4 mr-2" />
+          )}
+          Upload Document
+        </Button>
+        <input
+          id="property-document"
+          type="file"
+          accept="application/pdf"
+          className="hidden"
+          onChange={handleDocumentUpload}
+        />
+      </div>
+
+      {/* Display uploaded documents */}
+      {form.watch('documents')?.map((documentUrl, index) => (
+        <div key={index} className="flex items-center justify-between p-2 border rounded-lg">
+          <a
+            href={documentUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-500 hover:underline"
+          >
+            Document {index + 1}
+          </a>
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={() => removeDocument(index)}
+          >
+            Remove
+          </Button>
+        </div>
+      ))}
     </div>
   );
 };

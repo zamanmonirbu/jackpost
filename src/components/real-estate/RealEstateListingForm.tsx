@@ -32,7 +32,8 @@ const RealEstateListingForm = () => {
 
   const onSubmit = async (data: any) => {
 
-    console.log("fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff", data)
+    console.log("Submitted data",data);
+
     try {
       const { error } = await supabase
         .from("business_listings")
@@ -42,7 +43,7 @@ const RealEstateListingForm = () => {
           status: "draft",
         });
         if (error) {
-          console.error("Error creating listing:asdfasdffasdfasdfasfasdfsadfasdfsadfasfsadfasfasfasfasdfsadfsadfasdfsdafsadfsadf", error);
+          console.log(error);
           throw error;
         }
 
@@ -51,7 +52,6 @@ const RealEstateListingForm = () => {
       toast.success("Property listing created successfully");
       navigate("/browse");
     } catch (error) {
-      console.error("Error creating listing: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee", error);
       toast.error("Failed to create property listing");
     }
   };
