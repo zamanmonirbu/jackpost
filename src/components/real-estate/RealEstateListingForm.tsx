@@ -32,13 +32,16 @@ const RealEstateListingForm = () => {
 
   const onSubmit = async (data: any) => {
 
-    console.log("Submitted data",data);
+    // console.log("Submitted data",data);
+    // alert("Submitted data: "+JSON.stringify(data));
 
     try {
+      const { verified_documents,documents, ...filteredData } = data;
+
       const { error } = await supabase
         .from("business_listings")
         .insert({
-          ...data,
+          ...filteredData,
           business_type: "real_estate",
           status: "draft",
         });
@@ -50,8 +53,11 @@ const RealEstateListingForm = () => {
       if (error) throw error;
 
       toast.success("Property listing created successfully");
+      alert("Property listing created successfully");
       navigate("/browse");
     } catch (error) {
+      alert("Property listing created failed");
+      console.error("Error creating property listing:", error);
       toast.error("Failed to create property listing");
     }
   };

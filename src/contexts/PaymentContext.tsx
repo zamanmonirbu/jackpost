@@ -31,6 +31,7 @@ export const PaymentProvider = ({children}: {children: React.ReactNode}) => {
     amount: number,
     description: string
   ): Promise<boolean> => {
+    
     console.log("Processing payment of $", amount, "Description:", description);
   
     if (!user) {

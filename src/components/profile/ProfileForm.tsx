@@ -6,18 +6,26 @@ import { BadgeCheck, Building2, User } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import BillingSection from "./BillingSection";
 import TwoFactorAuth from "./TwoFactorAuth";
-import { VerificationDialog } from "@/components/verification/VerificationDialog";
-
-// Import usePremiumFeatures hook to access the context
-import { usePremiumFeatures } from "@/contexts/PremiumFeaturesContext"; 
+import { usePremiumFeatures } from "@/contexts/PremiumFeaturesContext";
+import { toast } from "sonner";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 
 export const ProfileForm = () => {
   const { user } = useAuth();
-  
-  // Accessing isVerified directly from context
-  const { isVerified, features } = usePremiumFeatures();
+  const { isVerified } = usePremiumFeatures();
+  const [loading, setLoading] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    dob: "",
+    address: "",
+  });
 
-  // Optional: You can still use useQuery for other data like verifiedBusinesses if needed
+  // Fetch verified businesses
   const { data: verifiedBusinesses } = useQuery({
     queryKey: ["verified-businesses", user?.id],
     queryFn: async () => {
@@ -26,84 +34,65 @@ export const ProfileForm = () => {
         .select("*")
         .eq("user_id", user?.id)
         .eq("verification_type", "verified");
-
       if (error) throw error;
       return data;
     },
     enabled: !!user?.id,
   });
 
+  const handleInputChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleVerification = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch(`https://uvsxosexezyafgfimklv.supabase.co/functions/v1/verify-user`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+      const result = await response.json();
+      if (result.success) {
+        toast.success("Verification started successfully!");
+        setOpen(false);
+      } else {
+        console.log()
+        throw new Error(result.error || "Verification failed");
+      }
+    } catch (error) {
+      toast.error(error.message || "Verification failed");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="container mx-auto p-6 space-y-8">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      <div className="flex justify-between items-start md:items-center gap-4">
         <div>
           <h1 className="text-3xl font-bold">Profile Settings</h1>
-          <p className="text-muted-foreground">
-            Manage your account settings and preferences
-          </p>
+          <p className="text-muted-foreground">Manage your account settings and preferences</p>
         </div>
-        {/* Conditional rendering based on isVerified from context */}
-        {!isVerified && <VerificationDialog />}
+        {!isVerified && <Button onClick={() => setOpen(true)}>Start Verification</Button>}
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <CardTitle className="flex items-center gap-2">
-                <User className="w-5 h-5" />
-                Verification Status
-              </CardTitle>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="flex items-center gap-2">
-                {/* Conditional rendering based on isVerified from context */}
-                <Badge variant={isVerified ? "default" : "secondary"} className="flex items-center gap-1">
-                  <BadgeCheck className="w-4 h-4" />
-                  {isVerified ? "Verified Seller" : "Not Verified"}
-                </Badge>
-                {user?.verification_date && (
-                  <span className="text-sm text-muted-foreground">
-                    Since {new Date(user?.verification_date).toLocaleDateString()}
-                  </span>
-                )}
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <CardTitle className="flex items-center gap-2">
-                <Building2 className="w-5 h-5" />
-                Business Verification
-              </CardTitle>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {verifiedBusinesses && verifiedBusinesses.length > 0 ? (
-                verifiedBusinesses.map((business) => (
-                  <div key={business.id} className="flex items-center gap-2">
-                    <Badge variant="default" className="flex items-center gap-1">
-                      <BadgeCheck className="w-4 h-4" />
-                      Verified Business
-                    </Badge>
-                    <span className="text-sm font-medium">{business.business_name}</span>
-                  </div>
-                ))
-              ) : (
-                <div className="text-sm text-muted-foreground">
-                  No verified businesses yet
-                </div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>User Verification</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <Input name="firstName" placeholder="First Name" onChange={handleInputChange} />
+            <Input name="lastName" placeholder="Last Name" onChange={handleInputChange} />
+            <Input name="dob" type="date" placeholder="Date of Birth" onChange={handleInputChange} />
+            <Input name="address" placeholder="Address" onChange={handleInputChange} />
+          </div>
+          <DialogFooter>
+            <Button onClick={handleVerification} disabled={loading}>{loading ? "Verifying..." : "Submit"}</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <TwoFactorAuth />
       <BillingSection />

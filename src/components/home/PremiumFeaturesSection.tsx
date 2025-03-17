@@ -1,16 +1,22 @@
+import { useState } from "react";
 import { TrendingUp, MessageCircle, FileText, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { toast } from "sonner";
+import { useFeaturePayment } from "@/hooks/useFeaturePayment";
 
 const premiumFeatures = [
   {
+    type: "dynamic_filters",
     icon: <TrendingUp className="h-5 w-5" />,
     title: "Dynamic Filters",
     description: "Refine your search like never before with advanced filters.",
     price: "$1 for 1-hour access",
     buttonText: "Try Dynamic Filters",
+    duration: 1, // 1 hour
   },
   {
+    type: "priority_message",
     icon: <MessageCircle className="h-5 w-5" />,
     title: "Priority Messaging",
     description: "Get noticed faster by sellers with priority messages.",
@@ -18,6 +24,7 @@ const premiumFeatures = [
     buttonText: "Send Priority Message",
   },
   {
+    type: "loi_submission",
     icon: <FileText className="h-5 w-5" />,
     title: "LOI Submissions",
     description: "Streamline offers and secure deals directly through our platform.",
@@ -27,6 +34,21 @@ const premiumFeatures = [
 ];
 
 const PremiumFeaturesSection = () => {
+  const { purchaseFeature } = useFeaturePayment();
+  const [processingFeature, setProcessingFeature] = useState<string | null>(null); // Track which button is processing
+
+  const handlePurchase = async (type: "dynamic_filters" | "priority_message" | "loi_submission", duration?: number) => {
+    setProcessingFeature(type); // Set the button to processing
+    const success = await purchaseFeature(type, duration);
+    setProcessingFeature(null); // Reset processing state
+
+    if (success) {
+      toast.success(`${type.replace("_", " ")} activated successfully!`);
+    } else {
+      toast.error(`Failed to activate ${type.replace("_", " ")}`);
+    }
+  };
+
   return (
     <section className="bg-primary/5 -mx-8 px-8 py-16">
       <div className="container mx-auto">
@@ -43,8 +65,12 @@ const PremiumFeaturesSection = () => {
               </CardHeader>
               <CardContent>
                 <p className="mb-4 text-gray-600">{feature.description}</p>
-                <Button className="w-full bg-primary hover:bg-primary/90">
-                  {feature.buttonText}
+                <Button
+                  className="w-full bg-primary hover:bg-primary/90"
+                  onClick={() => handlePurchase(feature.type, feature.duration)}
+                  disabled={processingFeature === feature.type} 
+                >
+                  {processingFeature === feature.type ? "Processing..." : feature.buttonText}
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </CardContent>

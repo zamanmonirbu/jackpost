@@ -16,7 +16,6 @@ const BusinessListingForm = () => {
   const handleSubmit = async (data: any) => {
     toast.success("Called api")
     if (!user) {
-      // Store the form data temporarily and show auth dialog
       pendingData.current = data;
       setShowAuthDialog(true);
       return;

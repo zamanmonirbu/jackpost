@@ -52,16 +52,23 @@ export const useBusinessListingForm = () => {
   const { isOnline } = useConnectionStatus();
   const pendingData = useRef<BusinessListingFormData | null>(null);
 
+  // console.log(handleSubmit,isSubmitting, businessId);
+
   const onSubmit = async (data: BusinessListingFormData) => {
+    console.log("asdf;lsadfjl;kasdfjkl;asfsda;fsadjj",data);
     if (!isOnline) {
       console.error("No internet connection");
       return;
     }
 
     const isValid = await validateForm(data);
+
+    console.log(isOnline,isValid);
     if (!isValid) {
       return;
     }
+
+    
 
     await handleSubmit(data);
   };

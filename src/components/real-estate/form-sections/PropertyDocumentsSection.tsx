@@ -36,8 +36,6 @@ const PropertyDocumentsSection = ({ form }: PropertyDocumentsSectionProps) => {
         .from('property_documents')
         .getPublicUrl(filePath);
 
-      console.log("Public URL:", publicUrl);
-
       // Update the form value with the PDF URL
       const currentDocuments = form.getValues('documents') || [];
       form.setValue('documents', [...currentDocuments, publicUrl]);
