@@ -39,14 +39,14 @@ const PremiumFeaturesSection = () => {
 
   const handlePurchase = async (type: "dynamic_filters" | "priority_message" | "loi_submission", duration?: number) => {
     setProcessingFeature(type); // Set the button to processing
-    const success = await purchaseFeature(type, duration);
+    await purchaseFeature(type, duration);
     setProcessingFeature(null); // Reset processing state
 
-    if (success) {
-      toast.success(`${type.replace("_", " ")} activated successfully!`);
-    } else {
-      toast.error(`Failed to activate ${type.replace("_", " ")}`);
-    }
+    // if (success) {
+    //   toast.success(`${type.replace("_", " ")} activated successfully!`);
+    // } else {
+    //   toast.error(`Failed to activate ${type.replace("_", " ")}`);
+    // }
   };
 
   return (

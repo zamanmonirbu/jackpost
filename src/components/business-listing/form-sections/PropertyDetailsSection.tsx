@@ -7,7 +7,6 @@ import EnergyRatingSelect from "./property-details/EnergyRatingSelect";
 import AmenitiesCheckboxGroup from "./property-details/AmenitiesCheckboxGroup";
 import NeighborhoodFeaturesCheckboxGroup from "./property-details/NeighborhoodFeaturesCheckboxGroup";
 
-
 interface PropertyDetailsSectionProps {
   form: UseFormReturn<BusinessListingFormData>;
 }

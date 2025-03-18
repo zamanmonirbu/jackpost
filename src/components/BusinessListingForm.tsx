@@ -6,7 +6,6 @@ import { useAuth } from "@/contexts/AuthContext";
 import AuthForm from "./auth/AuthForm";
 import { Dialog, DialogContent } from "./ui/dialog";
 import { useState } from "react";
-import { toast } from "sonner";
 
 const BusinessListingForm = () => {
   const { user } = useAuth();
@@ -14,8 +13,11 @@ const BusinessListingForm = () => {
   const { form, formErrors, onSubmit, isSubmitting, businessId, pendingData } = useBusinessListingForm();
 
   const handleSubmit = async (data: any) => {
-    toast.success("Called api")
+
+    console.log("Form data:",   data)
+
     if (!user) {
+      // Store the form data temporarily and show auth dialog
       pendingData.current = data;
       setShowAuthDialog(true);
       return;

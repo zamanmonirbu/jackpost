@@ -24,13 +24,13 @@ export const useFilterManagement = () => {
   });
 
   const handleFilterChange = (newFilters: typeof filters) => {
-    if (!user) {
-      toast.error("Please sign in to use advanced filters");
-      navigate("/login");
-      return;
-    }
+    // if (!user) {
+    //   toast.error("Please sign in to use advanced filters");
+    //   navigate("/login");
+    //   return;
+    // }
     setFilters(newFilters);
-    toast.success("Filters applied successfully");
+    // toast.success("Filters applied successfully");
   };
 
   const handleFilterReset = () => {

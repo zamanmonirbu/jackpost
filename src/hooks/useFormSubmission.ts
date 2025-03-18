@@ -1,8 +1,8 @@
-import { useState } from "react";
-import { useToast } from "@/components/ui/use-toast";
-import { supabase } from "@/integrations/supabase/client";
 import { BusinessListingFormData } from "@/components/business-listing/schema";
+import { useToast } from "@/components/ui/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
+import { useState } from "react";
 
 export const useFormSubmission = () => {
   const { toast } = useToast();
@@ -19,7 +19,7 @@ export const useFormSubmission = () => {
 
     try {
       const { data: insertedListing, error: insertError } = await supabase
-        .from('business_listings')
+        .from("business_listings")
         .insert([
           {
             business_name: data.businessName,
@@ -31,9 +31,9 @@ export const useFormSubmission = () => {
             employee_count: data.employeeCount,
             profit_margin: data.profitMargin,
             user_id: user.id,
-            status: 'published',
+            status: "published",
             image_url: data.image_url || null,
-          }
+          },
         ])
         .select()
         .single();
@@ -52,7 +52,8 @@ export const useFormSubmission = () => {
       console.error("Submission error:", error);
       toast({
         title: "Error",
-        description: "There was a problem submitting your listing. Please try again.",
+        description:
+          "There was a problem submitting your listing. Please try again.",
         variant: "destructive",
       });
       return false;

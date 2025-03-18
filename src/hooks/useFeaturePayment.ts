@@ -14,12 +14,12 @@ export const useFeaturePayment = () => {
     try {
       const amount =
         type === "verification"
-          ? 100
+          ? 10000
           : type === "loi_submission"
-          ? 20
+          ? 2000
           : type === "priority_message"
-          ? 2
-          : 1;
+          ? 200
+          : 100;
 
       const success = await processPayment(
         amount,
