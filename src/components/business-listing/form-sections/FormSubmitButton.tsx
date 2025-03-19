@@ -7,6 +7,9 @@ interface FormSubmitButtonProps {
 }
 
 const FormSubmitButton = ({ isSubmitting, disabled, businessId }: FormSubmitButtonProps) => {
+
+  console.log("Business ID:", businessId, "isSubmitting:", isSubmitting, "disabled:", disabled)
+
   return (
     <Button 
       type="submit" 

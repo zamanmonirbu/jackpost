@@ -525,12 +525,12 @@ export type Database = {
         Insert: {
           amenities?: Json | null
           api_verified_data?: Json | null
-          asking_price?: number
+          asking_price: number
           assets?: string | null
           bathrooms?: number | null
           bedrooms?: number | null
           building_class?: string | null
-          business_name?: string
+          business_name: string
           business_type?: string | null
           competitor_analysis?: string | null
           construction_status?: string | null
@@ -539,7 +539,7 @@ export type Database = {
           debt_to_equity_ratio?: number | null
           deleted_at?: string | null
           deletion_reason?: string | null
-          description?: string
+          description: string
           document_verification_status?: string | null
           employee_count?: string | null
           energy_rating?: string | null
@@ -551,13 +551,13 @@ export type Database = {
           id?: string
           image_url?: string | null
           image_urls?: string[] | null
-          industry?: string
+          industry: string
           investment_metrics?: Json | null
           is_featured?: boolean | null
           is_franchise_available?: boolean | null
           is_temporary?: boolean | null
           listing_title?: string
-          location?: string
+          location: string
           location_type?: string | null
           lot_size?: string | null
           monthly_revenue?: number | null
@@ -583,7 +583,7 @@ export type Database = {
           views_count?: number | null
           virtual_tour_url?: string | null
           year_built?: number | null
-          yearly_revenue?: number
+          yearly_revenue: number
           years_in_operation?: string | null
           zoning_info?: string | null
           zoning_type?: string | null
